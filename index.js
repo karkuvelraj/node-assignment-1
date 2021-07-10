@@ -5,6 +5,11 @@
  const promoRouter = require('./routers/promoRouter')
  const leaderRouter = require('./routers/leaderRouter')
  const logger = require('morgan');
+ const mongoose= require('mongoose');
+
+ mongoose.connect('mongodb://localhost:5000/testDb').then((con)=>{
+     console.log("connection made to db")
+ })
 
  const port = 8080;
  const host = 'localhost';

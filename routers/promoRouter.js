@@ -1,43 +1,79 @@
 
 const express = require('express');
 const promoRouter = express.Router();
-
+const Promotions= require('../models/promotions')
 promoRouter.use(express.json());
-
-promoRouter.route('/:promoId')
-    .all((req,res,next)=>{
-        res.statusCode=200;
-        res.setHeader('content-type','text/plain');
-        next();
-    })
-    .get((req,res,next)=>{
-        res.end("Will Fetch Promotion : "+req.params.promoId);
-    })
-    .post((req,res)=>{
-        res.statusCode=403
-        res.end('POST method not supported on /promotions/:promoId Endpoint..');
-    })
-    .put((req,res)=>{
-        res.write('Updating promotion:'+req.params.promoId+ '\n')
-        res.end('Will update the promotion: '+req.body.name+' with details: '+req.body.description);
-    })
-    .delete((req,res)=>{
-        res.end('Will Delete promotion: '+req.params.promoId);
-    });
 
 promoRouter.route('/')
     .get((req,res,next)=>{
-        res.end("Will Fetch All the promotions!!!");
+        Promotions.find({})
+            .then((data)=>{
+                res.statusCode=200;
+                res.setHeader('content-type','application/json');
+                res.json(data);        
+            },err=>next(err))
+         .catch((err)=>next(err))
     })
-    .post((req,res)=>{
-        res.end('Will Add the promotion: '+req.body.name+' with details: '+req.body.description);
+    .post((req,res,next)=>{
+        Promotions.create(req.body)
+        .then((data)=>{
+            res.statusCode=200;
+            res.setHeader('content-type','application/json');
+            res.json(data);        
+        },err=>next(err))
+     .catch((err)=>next(err))
     })
     .put((req,res)=>{
         res.statusCode=403
         res.end('PUT method not supported on /promotions Endpoint..');
     })
-    .delete((req,res)=>{
-        res.end('Will Delete All the promotions!!!');
+    .delete((req,res,next)=>{
+        Promotions.remove({})
+        .then((data)=>{
+            res.statusCode=200;
+            res.setHeader('content-type','application/json');
+            res.json(data);        
+        },err=>next(err))
+     .catch((err)=>next(err))
     })
+
+promoRouter.route('/:promoId')
+    .get((req,res,next)=>{
+        Promotions.findById(req.params.promoId)
+        .then((data)=>{
+            if(data){
+                res.statusCode=200;
+                res.setHeader('content-type','application/json');
+                res.json(data); 
+            }else{
+                res.statusCode=404;
+                res.end("Promotion detail Not Found for "+req.params.promoId); 
+            }        
+        },err=>next(err))
+     .catch((err)=>next(err))
+    })
+    .post((req,res)=>{
+        res.statusCode=403
+        res.end('POST method not supported on /promotions/:promoId Endpoint..');
+    })
+    .put((req,res,next)=>{
+        Promotions.findByIdAndUpdate(req.params.promoId,
+            {$set:req.body},{new:true})
+        .then((data)=>{
+            res.statusCode=200;
+            res.setHeader('content-type','application/json');
+            res.json(data);        
+        },err=>next(err))
+     .catch((err)=>next(err))
+    })
+    .delete((req,res,next)=>{
+        Promotions.findByIdAndRemove(req.params.promoId)
+        .then((data)=>{
+            res.statusCode=200;
+            res.setHeader('content-type','application/json');
+            res.json(data);        
+        },err=>next(err))
+     .catch((err)=>next(err))
+    });
 
 module.exports=promoRouter;
