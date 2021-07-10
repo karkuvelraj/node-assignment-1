@@ -4,10 +4,11 @@
  const dishRouter = require('./routers/dishRouter')
  const promoRouter = require('./routers/promoRouter')
  const leaderRouter = require('./routers/leaderRouter')
+ const userRouter = require('./routers/userRouter')
  const logger = require('morgan');
  const auth = require('./auth')
  const mongoose= require('mongoose');
- const cookieParser=require('cookie-parser')
+//  const cookieParser=require('cookie-parser')
  var session=require('express-session')
  const FileStorage= require('session-file-store')(session)
  mongoose.connect('mongodb://localhost:5000/testDb').then((con)=>{
@@ -21,7 +22,7 @@
 
     app.use(logger('dev'));
     // app.use(cookieParser('123-123-123'))
-    app.use(express.static(__dirname+'/public'))
+    
      
     app.use(session({
         secret:'123-123',
@@ -29,6 +30,8 @@
         resave:false,
         store:new FileStorage()
     }));
+    app.use('/users',userRouter)
+    app.use(express.static(__dirname+'/public'))
     app.use(auth);
     app.use('/dishes',dishRouter)
     app.use('/promotions',promoRouter)

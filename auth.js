@@ -1,37 +1,30 @@
 
 
 function basicAuthentication(req,res,next){
-    console.log(req.session);
-
+    //console.log(req.session);
+    console.log('basic Auth')
     if(!req.session.user){
-        console.log('Inside Auth block')
-    let up=req.headers.authorization
-    if(!up){
-        res.setHeader('www-authenticate','basic')
-        res.statusCode=401;
-        next(new Error('Not Authenticated'));
+        res.statusCode=403;
+        
         console.log('Not Authenticated')
-        return;
-    }
-    console.log(new Buffer.from(up.split(' ')[1],'base64').toString())
-    let upArr=new Buffer.from(up.split(' ')[1],'base64').toString().split(':');
-    if(upArr[0]=='Admin'&&upArr[1]=='pass')
-    {
-        // res.cookie('user','Admin',{signed:true})
-        req.session.user='Admin'
-        next()
-    }else{
-        res.setHeader('www-authenticate','basic')
-        res.statusCode=401;
-        next(new Error('Not Authenticated'));
-        console.log('Not Authenticated')
-        return;
-    }
+        return next(new Error('Not Authenticated'));
     }
     else{
-        console.log('Session login')
-        next()
+        if(req.session.user=='Admin')
+        {
+            // res.cookie('user','Admin',{signed:true})
+            req.session.user='Admin'
+            next()
+        }else{
+            // res.setHeader('www-authenticate','basic')
+            res.statusCode=401;
+            next(new Error('session invalidated'));
+            console.log('session invalidated')
+            return;
+        }
     }
+    
+    
 }
 
 module.exports= basicAuthentication
