@@ -1,10 +1,10 @@
 
 
 function basicAuthentication(req,res,next){
-    console.log(req.signedCookies);
+    console.log(req.session);
 
-    if(!req.signedCookies.user){
-        console.log('Inside signed cookies')
+    if(!req.session.user){
+        console.log('Inside Auth block')
     let up=req.headers.authorization
     if(!up){
         res.setHeader('www-authenticate','basic')
@@ -17,7 +17,8 @@ function basicAuthentication(req,res,next){
     let upArr=new Buffer.from(up.split(' ')[1],'base64').toString().split(':');
     if(upArr[0]=='Admin'&&upArr[1]=='pass')
     {
-        res.cookie('user','Admin',{signed:true})
+        // res.cookie('user','Admin',{signed:true})
+        req.session.user='Admin'
         next()
     }else{
         res.setHeader('www-authenticate','basic')
@@ -28,7 +29,7 @@ function basicAuthentication(req,res,next){
     }
     }
     else{
-        console.log('Cookie login')
+        console.log('Session login')
         next()
     }
 }
