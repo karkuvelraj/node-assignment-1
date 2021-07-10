@@ -5,6 +5,7 @@
  const promoRouter = require('./routers/promoRouter')
  const leaderRouter = require('./routers/leaderRouter')
  const logger = require('morgan');
+ const auth = require('./auth')
  const mongoose= require('mongoose');
 
  mongoose.connect('mongodb://localhost:5000/testDb').then((con)=>{
@@ -19,7 +20,7 @@
     app.use(logger('dev'));
 
     app.use(express.static(__dirname+'/public'))
-
+    app.use(auth);
     app.use('/dishes',dishRouter)
     app.use('/promotions',promoRouter)
     app.use('/leaders',leaderRouter)
