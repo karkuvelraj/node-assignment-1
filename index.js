@@ -7,6 +7,7 @@
  const logger = require('morgan');
  const auth = require('./auth')
  const mongoose= require('mongoose');
+ const cookieParser=require('cookie-parser')
 
  mongoose.connect('mongodb://localhost:5000/testDb').then((con)=>{
      console.log("connection made to db")
@@ -18,7 +19,7 @@
  const app = express();
 
     app.use(logger('dev'));
-
+    app.use(cookieParser('123-123-123'))
     app.use(express.static(__dirname+'/public'))
     app.use(auth);
     app.use('/dishes',dishRouter)
