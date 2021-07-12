@@ -2,6 +2,7 @@
 const express = require('express');
 const promoRouter = express.Router();
 const Promotions= require('../models/promotions')
+var authenticate = require('../authentication')
 promoRouter.use(express.json());
 
 promoRouter.route('/')
@@ -14,7 +15,7 @@ promoRouter.route('/')
             },err=>next(err))
          .catch((err)=>next(err))
     })
-    .post((req,res,next)=>{
+    .post(authenticate.verifyJWT,(req,res,next)=>{
         Promotions.create(req.body)
         .then((data)=>{
             res.statusCode=200;
@@ -23,11 +24,11 @@ promoRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .put((req,res)=>{
+    .put(authenticate.verifyJWT,(req,res)=>{
         res.statusCode=403
         res.end('PUT method not supported on /promotions Endpoint..');
     })
-    .delete((req,res,next)=>{
+    .delete(authenticate.verifyJWT,(req,res,next)=>{
         Promotions.remove({})
         .then((data)=>{
             res.statusCode=200;
@@ -52,11 +53,11 @@ promoRouter.route('/:promoId')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .post((req,res)=>{
+    .post(authenticate.verifyJWT,(req,res)=>{
         res.statusCode=403
         res.end('POST method not supported on /promotions/:promoId Endpoint..');
     })
-    .put((req,res,next)=>{
+    .put(authenticate.verifyJWT,(req,res,next)=>{
         Promotions.findByIdAndUpdate(req.params.promoId,
             {$set:req.body},{new:true})
         .then((data)=>{
@@ -66,7 +67,7 @@ promoRouter.route('/:promoId')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .delete((req,res,next)=>{
+    .delete(authenticate.verifyJWT,(req,res,next)=>{
         Promotions.findByIdAndRemove(req.params.promoId)
         .then((data)=>{
             res.statusCode=200;

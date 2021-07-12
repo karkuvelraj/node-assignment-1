@@ -23,9 +23,10 @@ router.post('/signup',(req,res,next)=>{
 
 router.post('/login', passport.authenticate('local'),(req,res)=>{
     console.log('Loginnn')
+
     res.statusCode=200;
-    res.setHeader('content-type','text/plain')
-    res.end('you are Authenticated')
+    res.setHeader('content-type','text/plain');
+    res.json({status:'you are Authenticated',token:authenticate.getToken({_id:req.user._id})});
 
 })
 

@@ -4,7 +4,7 @@ const express = require('express');
 
 const Dishes = require('../models/dishes')
 const dishRouter = express.Router();
-
+var authenticate = require('../authentication')
 //dishRouter.use(bodyParser.json()); For:-  Express < v4.16.0
 
 dishRouter.use(express.json());
@@ -22,11 +22,11 @@ dishRouter.route('/:dishId')
             })
         // res.end("Will Fetch dish with Id : "+req.params.dishId);
     })
-    .post((req,res)=>{
+    .post(authenticate.verifyJWT,(req,res)=>{
         res.statusCode=403
         res.end('POST method not supported on /dishes/:dishId Endpoint..');
     })
-    .put((req,res)=>{
+    .put(authenticate.verifyJWT,(req,res)=>{
         Dishes.findByIdAndUpdate(req.params.dishId,{$set:{...req.body}},{new:true}).
             then((data)=>{
                 res.json(data)
@@ -34,7 +34,7 @@ dishRouter.route('/:dishId')
         // res.write('Updating dish:'+req.params.dishId+ '\n')
         // res.end('Will update the dish: '+req.body.name+' with details: '+req.body.description);
     })
-    .delete((req,res)=>{
+    .delete(authenticate.verifyJWT,(req,res)=>{
         Dishes.findByIdAndRemove(req.params.dishId)
         .then((data)=>{
             res.json(data)
@@ -50,7 +50,7 @@ dishRouter.route('/')
                 res.json(data)
             })
     })
-    .post((req,res)=>{
+    .post(authenticate.verifyJWT,(req,res)=>{
         console.log(req.body.dishes)
         Dishes.insertMany(req.body.dishes)
          .then((data)=>{
@@ -58,11 +58,11 @@ dishRouter.route('/')
          })
         // res.end('Will Add the dish: '+req.body.name+' with details: '+req.body.description);
     })
-    .put((req,res)=>{
+    .put(authenticate.verifyJWT,(req,res)=>{
         res.statusCode=403
         res.end('PUT method not supported on /dishes Endpoint..');
     })
-    .delete((req,res)=>{
+    .delete(authenticate.verifyJWT,(req,res)=>{
         Dishes.remove({})
             .then((data)=>{
                 res.json(data)
