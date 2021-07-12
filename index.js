@@ -14,7 +14,7 @@
  mongoose.connect('mongodb://localhost:5000/testDb').then((con)=>{
      console.log("connection made to db")
  })
-
+ var passport=require('passport')
  const port = 8080;
  const host = 'localhost';
 
@@ -30,6 +30,9 @@
         resave:false,
         store:new FileStorage()
     }));
+    
+ app.use(passport.initialize())
+ app.use(passport.session())
     app.use('/users',userRouter)
     app.use(express.static(__dirname+'/public'))
     app.use(auth);
