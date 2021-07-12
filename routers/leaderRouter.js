@@ -14,7 +14,7 @@ leaderRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .post((req,res)=>{
+    .post(authenticate.verifyJWT,(req,res)=>{
         Leaders.create(req.body)
         .then((data)=>{
             res.statusCode=200;
@@ -23,11 +23,11 @@ leaderRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .put((req,res)=>{
+    .put(authenticate.verifyJWT,(req,res)=>{
         res.statusCode=403
         res.end('PUT method not supported on /leaders Endpoint..');
     })
-    .delete((req,res)=>{
+    .delete(authenticate.verifyJWT,(req,res)=>{
         Leaders.remove({})
         .then((data)=>{
             res.statusCode=200;
@@ -52,11 +52,11 @@ leaderRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .post((req,res)=>{
+    .post(authenticate.verifyJWT,(req,res)=>{
         res.statusCode=403
         res.end('POST method not supported on /leaders/:leaderId Endpoint..');
     })
-    .put((req,res)=>{
+    .put(authenticate.verifyJWT,(req,res)=>{
         Leaders.findByIdAndUpdate(req.params.leaderId,
             {$set:req.body},{new:true})
         .then((data)=>{
@@ -66,7 +66,7 @@ leaderRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err));
     })
-    .delete((req,res)=>{
+    .delete(authenticate.verifyJWT,(req,res)=>{
         Leaders.findByIdAndRemove(req.params.leaderId)
         .then((data)=>{
             res.statusCode=200;
