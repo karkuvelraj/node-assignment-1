@@ -34,3 +34,16 @@ exports.verifyJWT= passport.authenticate('jwt',{session:false});
 exports.getToken= (user)=>{
     return jwt.sign(user,config.secret,{expiresIn:3600})
 }
+
+exports.verifyAdmin=(req,res,next)=>{
+    if(req.user){
+        if(req.user.isAdmin){
+           return next()
+        }else{
+            res.statusCode=403;
+            res.end('UnAuthorized')
+        }
+    }else{
+        next(new Error('User Not Authenticated'))
+    }
+}

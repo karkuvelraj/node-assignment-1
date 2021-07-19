@@ -15,7 +15,7 @@ promoRouter.route('/')
             },err=>next(err))
          .catch((err)=>next(err))
     })
-    .post(authenticate.verifyJWT,(req,res,next)=>{
+    .post(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
         Promotions.create(req.body)
         .then((data)=>{
             res.statusCode=200;
@@ -24,11 +24,11 @@ promoRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .put(authenticate.verifyJWT,(req,res)=>{
+    .put(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         res.statusCode=403
         res.end('PUT method not supported on /promotions Endpoint..');
     })
-    .delete(authenticate.verifyJWT,(req,res,next)=>{
+    .delete(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
         Promotions.remove({})
         .then((data)=>{
             res.statusCode=200;
@@ -53,11 +53,11 @@ promoRouter.route('/:promoId')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .post(authenticate.verifyJWT,(req,res)=>{
+    .post(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         res.statusCode=403
         res.end('POST method not supported on /promotions/:promoId Endpoint..');
     })
-    .put(authenticate.verifyJWT,(req,res,next)=>{
+    .put(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
         Promotions.findByIdAndUpdate(req.params.promoId,
             {$set:req.body},{new:true})
         .then((data)=>{
@@ -67,7 +67,7 @@ promoRouter.route('/:promoId')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .delete(authenticate.verifyJWT,(req,res,next)=>{
+    .delete(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
         Promotions.findByIdAndRemove(req.params.promoId)
         .then((data)=>{
             res.statusCode=200;
