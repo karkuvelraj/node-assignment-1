@@ -48,7 +48,7 @@ router.post('/login', passport.authenticate('local'),(req,res)=>{
 
 })
 
-router.get('/',authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+router.get('/',(req,res)=>{
     User.find({}).
         then((users)=>{
             res.statusCode=200;
