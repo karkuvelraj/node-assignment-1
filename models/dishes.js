@@ -16,7 +16,7 @@ let commentSchema= new mongoose.Schema({
     },
     date:{
         type: Date,
-        requred : true
+        required : true
     }
 }, {
     timestamps: true

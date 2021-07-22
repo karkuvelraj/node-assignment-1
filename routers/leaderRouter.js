@@ -2,12 +2,14 @@
 const express = require('express');
 const leaderRouter = express.Router();
 const Leaders= require('../models/leaders')
+const cors= require('./cors')
 leaderRouter.use(express.json());
 
 var authenticate = require('../authentication')
 
 leaderRouter.route('/')
-    .get((req,res,next)=>{
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors,(req,res,next)=>{
         Leaders.find({})
         .then((data)=>{
             res.statusCode=200;
@@ -16,7 +18,7 @@ leaderRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .post(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .post(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         Leaders.create(req.body)
         .then((data)=>{
             res.statusCode=200;
@@ -25,11 +27,11 @@ leaderRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .put(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .put(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         res.statusCode=403
         res.end('PUT method not supported on /leaders Endpoint..');
     })
-    .delete(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .delete(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         Leaders.remove({})
         .then((data)=>{
             res.statusCode=200;
@@ -40,7 +42,8 @@ leaderRouter.route('/')
     })
 
   leaderRouter.route('/:leaderId')
-    .get((req,res,next)=>{
+  .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors,(req,res,next)=>{
         Leaders.findById(req.params.leaderId)
         .then((data)=>{
             if(data){
@@ -54,11 +57,11 @@ leaderRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .post(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .post(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         res.statusCode=403
         res.end('POST method not supported on /leaders/:leaderId Endpoint..');
     })
-    .put(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .put(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         Leaders.findByIdAndUpdate(req.params.leaderId,
             {$set:req.body},{new:true})
         .then((data)=>{
@@ -68,7 +71,7 @@ leaderRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err));
     })
-    .delete(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .delete(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         Leaders.findByIdAndRemove(req.params.leaderId)
         .then((data)=>{
             res.statusCode=200;

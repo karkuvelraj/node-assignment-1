@@ -1,7 +1,7 @@
 
 const express = require('express');
 // const bodyParser = require('body-parser');
-
+const cors= require('./cors')
 const Dishes = require('../models/dishes')
 const dishRouter = express.Router();
 var authenticate = require('../authentication')
@@ -11,7 +11,8 @@ dishRouter.use(express.json());
 
 
 dishRouter.route('/:dishId/comments/:commentId')
-    .get((req,res,next)=>{
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors,(req,res,next)=>{
         Dishes.findById(req.params.dishId).
             populate('comments.author').
             then((data)=>{
@@ -19,10 +20,10 @@ dishRouter.route('/:dishId/comments/:commentId')
             })
        
     })
-    .post(authenticate.verifyJWT,(req,res)=>{  
+    .post(cors.corsWithOptions,authenticate.verifyJWT,(req,res)=>{  
        res.end('Post Method Not supported')
     })
-    .put(authenticate.verifyJWT,(req,res)=>{
+    .put(cors.corsWithOptions,authenticate.verifyJWT,(req,res)=>{
         Dishes.findById(req.params.dishId)
             .then((dish)=>{
                 User.findById(dish.comments.id(req.params.commentId).author).
@@ -43,7 +44,7 @@ dishRouter.route('/:dishId/comments/:commentId')
                 })
             })
     })
-    .delete(authenticate.verifyJWT,(req,res)=>{
+    .delete(cors.corsWithOptions,authenticate.verifyJWT,(req,res)=>{
         Dishes.findById(req.params.dishId)
         .then((data)=>{
             User.findById(data.comments.id(req.params.commentId).author).
@@ -72,11 +73,12 @@ var getDishWithAuthors=(dishId,res)=>{
     })
 }
 dishRouter.route('/:dishId/comments')
-    .get((req,res,next)=>{
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors,(req,res,next)=>{
         getDishWithAuthors(req.params.dishId,res)
    
     })
-    .post(authenticate.verifyJWT,(req,res)=>{  
+    .post(cors.corsWithOptions,authenticate.verifyJWT,(req,res)=>{  
         Dishes.findById(req.params.dishId).
         then((data)=>{
             data.comments.push({...req.body,author:req.user._id})
@@ -87,13 +89,13 @@ dishRouter.route('/:dishId/comments')
   
         })
     })
-    .put(authenticate.verifyJWT,(req,res)=>{
+    .put(cors.corsWithOptions,authenticate.verifyJWT,(req,res)=>{
      
         res.statusCode=403
         res.end('PUT method not supported on /dishes/:dishId/comments Endpoint..');
        
     })
-    .delete(authenticate.verifyJWT,(req,res)=>{
+    .delete(cors.corsWithOptions,authenticate.verifyJWT,(req,res)=>{
         Dishes.findById(req.params.dishId)
         .then((dish)=>{
             for (var i = (dish.comments.length -1); i >= 0; i--) {
@@ -109,18 +111,19 @@ dishRouter.route('/:dishId/comments')
     });
 
 dishRouter.route('/:dishId')
-    .get((req,res,next)=>{
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors,(req,res,next)=>{
         Dishes.findById(req.params.dishId).
             then((data)=>{
                 getDishWithAuthors(req.params.dishId,res)
             })
         // res.end("Will Fetch dish with Id : "+req.params.dishId);
     })
-    .post(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .post(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         res.statusCode=403
         res.end('POST method not supported on /dishes/:dishId Endpoint..');
     })
-    .put(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .put(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         Dishes.findByIdAndUpdate(req.params.dishId,{$set:{...req.body}},{new:true}).
             then((data)=>{
                 getDishWithAuthors(req.params.dishId,res)
@@ -128,7 +131,7 @@ dishRouter.route('/:dishId')
         // res.write('Updating dish:'+req.params.dishId+ '\n')
         // res.end('Will update the dish: '+req.body.name+' with details: '+req.body.description);
     })
-    .delete(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .delete(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         Dishes.findByIdAndRemove(req.params.dishId)
         .then((data)=>{
             getDishWithAuthors(req.params.dishId,res)
@@ -137,7 +140,8 @@ dishRouter.route('/:dishId')
     });
 
 dishRouter.route('/')
-    .get((req,res,next)=>{
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors,(req,res,next)=>{
         // res.end("Will Fetch All the Dishes!!!");
         Dishes.find({})
             .populate('comments.author')
@@ -145,7 +149,7 @@ dishRouter.route('/')
                 res.json(data)
             })
     })
-    .post(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .post(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         console.log(req.body.dishes)
         Dishes.insertMany(req.body.dishes)
          .then((dish)=>{
@@ -157,11 +161,11 @@ dishRouter.route('/')
          })
         // res.end('Will Add the dish: '+req.body.name+' with details: '+req.body.description);
     })
-    .put(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .put(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         res.statusCode=403
         res.end('PUT method not supported on /dishes Endpoint..');
     })
-    .delete(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .delete(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         Dishes.remove({})
             .then((dish)=>{
                 Dishes.find({})

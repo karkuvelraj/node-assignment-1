@@ -5,12 +5,13 @@
  const promoRouter = require('./routers/promoRouter')
  const leaderRouter = require('./routers/leaderRouter')
  const userRouter = require('./routers/userRouter')
- const filesupload = require('./routers/fileupload')
+ const filesupload = require('./routers/fileupload');
+ const favouriteRouter =require('./routers/favouriteRouter');
  const logger = require('morgan');
  const auth = require('./auth')
  const mongoose= require('mongoose');
  const https=require('https');
- const fs=require('fs')
+ const fs=require('fs');
 //  const cookieParser=require('cookie-parser')
  var session=require('express-session');
  const FileStorage= require('session-file-store')(session);
@@ -52,6 +53,7 @@
     app.use('/promotions',promoRouter)
     app.use('/leaders',leaderRouter)
     app.use('/files',filesupload)
+    app.use('/favorites',favouriteRouter)
    
 
 const server=http.createServer(app);

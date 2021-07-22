@@ -3,10 +3,12 @@ const express = require('express');
 const promoRouter = express.Router();
 const Promotions= require('../models/promotions')
 var authenticate = require('../authentication')
+const cors= require('./cors')
 promoRouter.use(express.json());
 
 promoRouter.route('/')
-    .get((req,res,next)=>{
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors,(req,res,next)=>{
         Promotions.find({})
             .then((data)=>{
                 res.statusCode=200;
@@ -15,7 +17,7 @@ promoRouter.route('/')
             },err=>next(err))
          .catch((err)=>next(err))
     })
-    .post(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
+    .post(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
         Promotions.create(req.body)
         .then((data)=>{
             res.statusCode=200;
@@ -24,11 +26,11 @@ promoRouter.route('/')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .put(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .put(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         res.statusCode=403
         res.end('PUT method not supported on /promotions Endpoint..');
     })
-    .delete(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
+    .delete(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
         Promotions.remove({})
         .then((data)=>{
             res.statusCode=200;
@@ -39,7 +41,8 @@ promoRouter.route('/')
     })
 
 promoRouter.route('/:promoId')
-    .get((req,res,next)=>{
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors,(req,res,next)=>{
         Promotions.findById(req.params.promoId)
         .then((data)=>{
             if(data){
@@ -53,11 +56,11 @@ promoRouter.route('/:promoId')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .post(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
+    .post(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
         res.statusCode=403
         res.end('POST method not supported on /promotions/:promoId Endpoint..');
     })
-    .put(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
+    .put(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
         Promotions.findByIdAndUpdate(req.params.promoId,
             {$set:req.body},{new:true})
         .then((data)=>{
@@ -67,7 +70,7 @@ promoRouter.route('/:promoId')
         },err=>next(err))
      .catch((err)=>next(err))
     })
-    .delete(authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
+    .delete(cors.corsWithOptions,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res,next)=>{
         Promotions.findByIdAndRemove(req.params.promoId)
         .then((data)=>{
             res.statusCode=200;

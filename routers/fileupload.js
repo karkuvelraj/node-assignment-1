@@ -5,6 +5,7 @@ var authenticate =require('../authentication');
 const multer= require('multer');
 const router=express.Router()
 router.use(express.json())
+const cors= require('./cors')
 
 
 const storage=multer.diskStorage({

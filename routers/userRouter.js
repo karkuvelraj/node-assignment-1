@@ -1,10 +1,12 @@
 const express=require('express');
-const router=express.Router()
 const User= require('../models/users')
-router.use(express.json())
 var passport = require('passport');
 var authenticate =require('../authentication');
 const users = require('../models/users');
+const cors= require('./cors')
+
+const router=express.Router()
+router.use(express.json())
 
 router.post('/signup',(req,res,next)=>{
     console.log('Inside Sign Up')
@@ -48,7 +50,7 @@ router.post('/login', passport.authenticate('local'),(req,res)=>{
 
 })
 
-router.get('/',(req,res)=>{
+router.get('/',cors.cors,authenticate.verifyJWT,authenticate.verifyAdmin,(req,res)=>{
     User.find({}).
         then((users)=>{
             res.statusCode=200;
